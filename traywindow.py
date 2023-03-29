@@ -1,7 +1,7 @@
-from PyQt5 import QtWidgets
+from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QMainWindow, QWidget
 from PyQt5.QtWidgets import QPushButton
-from PyQt5.QtCore import QSize, Qt
+from PyQt5.QtCore import QSize
 from PyQt5.QtGui import QCursor, QFont
 import pyqtgraph as pg
 
@@ -28,7 +28,7 @@ class MainWindow(QMainWindow):
 
         self.makeButtons()
 
-        # self.setWindowFlags(QtCore.Qt.FramelessWindowHint) 
+        self.setWindowFlags(QtCore.Qt.FramelessWindowHint) 
         
 
     def makeLayout(self):
@@ -126,7 +126,7 @@ class MainWindow(QMainWindow):
             if self.prevTime == intTime:
                 self.text.hide()
                 self.mouseMarker.hide()
-                
+
                 self.prevTime = -1
             else:
                 self.text.setPos(time, temp + 3)
@@ -217,5 +217,5 @@ class MainWindow(QMainWindow):
 
     def closeEvent(self, event):
         self.hide()
-        # event.ignore() # just minimize the window to the tray
-        event.accept() # let the program close
+        event.ignore() # just minimize the window to the tray
+        # event.accept() # let the program close
