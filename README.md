@@ -17,6 +17,4 @@ There is also a week view with a button on the bottom left of the graph (not sho
 ![Alt text](pics/weekView.png "weekview")
 
 ## WIP
-- Add time based event to update tray icon at the start of every hour
-- Add time based event to update temperatures/data at the start of the day
-- Add time based event to update labels on buttons to show change in day
+

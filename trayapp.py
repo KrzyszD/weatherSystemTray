@@ -2,8 +2,8 @@ import os
 import sys
 import traywindow
 from PyQt5 import QtWidgets, QtGui
+from PyQt5.QtCore import QTimer, QDateTime
 from PIL import Image, ImageDraw, ImageFont
-from datetime import datetime
 import requests
 import json
 
@@ -23,6 +23,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.getData()
 
         self.updateCurrentTemp()
+        self.setTimers()
 
         self.makeIcon()
 
@@ -95,20 +96,34 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
     def getWeekdays(self):
         self.days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
 
-        weekday = datetime.today().weekday() + 1
+        weekday = QDateTime.currentDateTime().date().dayOfWeek()
 
         self.days = self.days[weekday:] + self.days[:weekday]
 
     def updateCurrentTemp(self):
-        currentDateAndTime = datetime.now()
+        currentDateAndTime = QDateTime.currentDateTime().time()
 
-        hour = currentDateAndTime.hour
-        minute = currentDateAndTime.minute
+        hour = currentDateAndTime.hour()
+        minute = currentDateAndTime.minute()
 
         self.curTime = hour + minute / 60
 
         idx = hour - self.x[0]
         self.temp = (1 - minute / 60) * self.temps[idx] + (minute / 60) * self.temps[idx + 1]
+
+    def setTimers(self):
+        self.timer = QTimer()
+        self.timer.timeout.connect(self.timerEvent)
+        self.timer.start(1000 * 60 * 30)
+        # self.timer.start(1000)
+    
+    def timerEvent(self):
+        hour = QDateTime.currentDateTime().time().hour()
+        
+        if hour == 0:
+            self.getData()
+
+        self.updateCurrentTemp()
 
     def makeContextMenu(self, parent, app):
         menu = QtWidgets.QMenu(parent)

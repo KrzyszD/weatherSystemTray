@@ -189,20 +189,20 @@ class MainWindow(QMainWindow):
 
     # https://clay-atlas.com/us/blog/2021/03/04/pyqt5-cn-hide-title-bar-move-interface/
     def mousePressEvent(self, event):
-        if event.button() == Qt.LeftButton:
+        if event.button() == QtCore.Qt.LeftButton:
             self.moveFlag = True
             self.movePosition = event.globalPos() - self.pos()
-            self.setCursor(QCursor(Qt.OpenHandCursor))
+            self.setCursor(QCursor(QtCore.Qt.OpenHandCursor))
             event.accept()
 
     def mouseMoveEvent(self, event):
-        if Qt.LeftButton and self.moveFlag:
+        if QtCore.Qt.LeftButton and self.moveFlag:
             self.move(event.globalPos() - self.movePosition)
             event.accept()
 
     def mouseReleaseEvent(self, event):
         self.moveFlag = False
-        self.setCursor(Qt.ArrowCursor)
+        self.setCursor(QtCore.Qt.ArrowCursor)
 
     def mouse_clicked(self, mouseClickEvent):
         # mouseClickEvent is a pyqtgraph.GraphicsScene.mouseEvents.MouseClickEvent
