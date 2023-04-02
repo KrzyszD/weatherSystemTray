@@ -112,16 +112,19 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.temp = (1 - minute / 60) * self.temps[idx] + (minute / 60) * self.temps[idx + 1]
 
     def setTimers(self):
+        self.day = 0
+
         self.timer = QTimer()
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(1000 * 60 * 30)
         # self.timer.start(1000)
     
     def timerEvent(self):
-        hour = QDateTime.currentDateTime().time().hour()
+        day = QDateTime.currentDateTime().date().day()
         
-        if hour == 0:
+        if day != self.day:
             self.getData()
+            self.day = day
 
         self.updateCurrentTemp()
 
@@ -196,7 +199,10 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.setIcon(icon)
 
 
-def main(image):
+def main():
+    cwd = os.path.dirname(os.path.abspath(__file__))
+    image = cwd + '\\' + 'icon.png'
+
     app = QtWidgets.QApplication(sys.argv)
     w = QtWidgets.QWidget()
     trayIcon = SystemTrayIcon(QtGui.QIcon(image), w, app)
@@ -204,6 +210,4 @@ def main(image):
     sys.exit(app.exec_())
 
 if __name__ == '__main__':
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    icon = cwd + '\\' + 'icon.png'
-    main(icon)
+    main()

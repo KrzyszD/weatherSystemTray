@@ -1,2 +1,7 @@
 __pycache__
 icon.png
+build
+dist
+cli.py
+cli.spec
+trayapp.spec
