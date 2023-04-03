@@ -27,6 +27,7 @@ class MainWindow(QMainWindow):
         self.plotRegions()
 
         self.makeButtons()
+        self.addDayLabels()
 
         self.setWindowFlags(QtCore.Qt.FramelessWindowHint) 
         
@@ -54,6 +55,26 @@ class MainWindow(QMainWindow):
             self.btnRow.addWidget(self.btns[-1])
         
         self.layout.addLayout(self.btnRow)
+
+    def addDayLabels(self):
+
+        for i in range(7):
+                
+            color = (0, 0, 0)
+            anchor = (0.5, 1) # Where the "center point" is located for positioning
+            text = self.trayIcon.days[i]
+
+            text = pg.TextItem(text, anchor=anchor, color=color)
+            text.setPos(12 + i * 24, 90)
+
+            font = QFont()
+            font.setStyleHint(QFont.SansSerif)
+            font.setPointSize(12)
+            text.setFont(font)
+
+            self.graphWidget.addItem(text)
+
+        pass
 
     def chooseDayWrapper(self, i):
         # Use for attaching chooseDay to the day buttons

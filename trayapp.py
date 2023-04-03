@@ -135,6 +135,9 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         prefs_action = menu.addAction('Window')
         prefs_action.triggered.connect(self.openWindows)
 
+        update_action = menu.addAction('Update')
+        update_action.triggered.connect(self.getData)
+
         quit_action = menu.addAction('Quit')
         quit_action.triggered.connect(app.quit)
 
@@ -150,6 +153,8 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
             self.openWindows()
 
     def openWindows(self):
+        self.timerEvent()
+
         self.window = traywindow.MainWindow(self)
 
         # https://stackoverflow.com/a/39064225
