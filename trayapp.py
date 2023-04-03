@@ -127,6 +127,7 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
             self.day = day
 
         self.updateCurrentTemp()
+        self.makeIcon()
 
     def makeContextMenu(self, parent, app):
         menu = QtWidgets.QMenu(parent)

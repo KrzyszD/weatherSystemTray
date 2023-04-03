@@ -3,5 +3,5 @@ icon.png
 build
 dist
 cli.py
-cli.spec
-trayapp.spec
+*.spec
+commands.txt
