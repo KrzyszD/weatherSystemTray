@@ -9,8 +9,6 @@ import json
 
 class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
-    zipCode = "60193"
-
     def __init__(self, icon, parent=None, app=None):
         QtWidgets.QSystemTrayIcon.__init__(self, icon, parent)
 
@@ -20,12 +18,22 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
 
         app.focusChanged.connect(self.on_focusChanged)
 
+        self.initVars()
         self.getData()
 
         self.updateCurrentTemp()
         self.setTimers()
 
         self.makeIcon()
+
+    def initVars(self):
+        self.zipCode = "60193"
+        self.day = QDateTime.currentDateTime()
+
+        self.x = []
+        self.temps = []
+        self.daylight = []
+        self.precipitation = []
 
     def getData(self):
         
@@ -76,22 +84,54 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         r = requests.get(url = self.weatherURL)
         data = r.json()
 
+        # The hourly data
         periods = data["properties"]["periods"]
 
-        idx = int(periods[0]["startTime"][11:13])
+        # Start hour
+        hour = int(periods[0]["startTime"][11:13])
 
-        self.x = []
-        self.temps = []
-        self.daylight = []
-        self.precipitation = []
+        # Check day difference of today and last day updated
+        today = QDateTime.currentDateTime()
+        dayDiff = self.day.daysTo(today)
 
+        # If new day, remove old data
+        while len(self.x) > 0 and dayDiff > 0:
+
+            x = self.x.pop(0)
+            self.temps.pop(0)
+            self.daylight.pop(0)
+            self.precipitation.pop(0)
+
+            if x % 24 == 23:
+                dayDiff -= 1
+        
+        # Update x data to start today
+        if len(self.x) > 0 and self.x[0] % 24 == 0:
+            for i in range(self.x):
+                self.x[i] = i
+
+        # Update/add new data
         for period in periods:
-            self.x.append(idx)
-            idx += 1
+            # Check if need update
+            try:
+                idx = self.x.index(hour)
+            except:
+                idx = -1
 
-            self.temps.append(period["temperature"])
-            self.daylight.append(period["isDaytime"])
-            self.precipitation.append(period["probabilityOfPrecipitation"]["value"])
+            if idx != -1:
+                # Update data
+                self.temps[idx] = period["temperature"]
+                self.daylight[idx] = period["isDaytime"]
+                self.precipitation[idx] = period["probabilityOfPrecipitation"]["value"]                
+            else:
+                # Add data
+                self.x.append(hour)
+
+                self.temps.append(period["temperature"])
+                self.daylight.append(period["isDaytime"])
+                self.precipitation.append(period["probabilityOfPrecipitation"]["value"])
+            
+            hour += 1
 
     def getWeekdays(self):
         self.days = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"]
@@ -112,19 +152,18 @@ class SystemTrayIcon(QtWidgets.QSystemTrayIcon):
         self.temp = (1 - minute / 60) * self.temps[idx] + (minute / 60) * self.temps[idx + 1]
 
     def setTimers(self):
-        self.day = 0
-
         self.timer = QTimer()
         self.timer.timeout.connect(self.timerEvent)
         self.timer.start(1000 * 60 * 30)
         # self.timer.start(1000)
     
     def timerEvent(self):
-        day = QDateTime.currentDateTime().date().day()
+        # day = QDateTime.currentDateTime().date().day()
+        today = QDateTime.currentDateTime()
         
-        if day != self.day:
+        if self.day.daysTo(today) > 0:
             self.getData()
-            self.day = day
+            self.day = today
 
         self.updateCurrentTemp()
         self.makeIcon()
